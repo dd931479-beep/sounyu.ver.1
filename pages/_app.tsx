@@ -5,11 +5,10 @@ import { useState, useEffect, useRef } from "react";
 export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isCounting, setIsCounting] = useState(false);
-  const [seconds, setSeconds] = useState(3);
+  const [seconds, setSeconds] = useState(5); // カウントダウンは5秒
   const [isMuted, setIsMuted] = useState(true);
   const [isReady, setIsReady] = useState(false);
 
-  // 遷移先URLを一括管理
   const REDIRECT_URL = "https://b-short.link/sw0612";
 
   const toggleMute = () => {
@@ -19,18 +18,14 @@ export default function Home() {
     }
   };
 
-  // 動画の再生位置を監視
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    const handleTimeUpdate = () => {
-      if (video.currentTime >= 2 && !isCounting) setIsCounting(true);
-    };
-    video.addEventListener("timeupdate", handleTimeUpdate);
-    return () => video.removeEventListener("timeupdate", handleTimeUpdate);
-  }, [isCounting]);
+  // 動画が再生開始されたら3秒タイマーをスタート
+  const handlePlay = () => {
+    setTimeout(() => {
+      setIsCounting(true);
+    }, 3000); // ここで「3秒後」を指定
+  };
 
-  // カウントダウンと自動遷移
+  // カウントダウンと自動遷移（ここは変更なし）
   useEffect(() => {
     if (!isCounting) return;
     if (seconds > 0) {
@@ -39,7 +34,7 @@ export default function Home() {
     } else {
       setIsReady(true);
       videoRef.current?.pause();
-      window.location.href = REDIRECT_URL; // 自動遷移
+      window.location.href = REDIRECT_URL;
     }
   }, [isCounting, seconds]);
 
@@ -48,11 +43,12 @@ export default function Home() {
       
       <video
         ref={videoRef}
-        src="/HZrMBTCyl0bTN.mp4"
+        src="/mgoHauy41.mp4"
         autoPlay
         muted
         playsInline
         loop
+        onPlay={handlePlay} // 再生開始イベントをトリガーにする
         style={{ 
           position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
           objectFit: 'cover', zIndex: 1, opacity: isReady ? 0.6 : 1, transition: 'opacity 0.5s'
@@ -72,8 +68,8 @@ export default function Home() {
             }}
           >
             <div style={{ marginBottom: '10px', textAlign: 'center' }}>
-              <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>アプリ限定フル動画</p>
-              <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>今すぐ視聴する</p>
+              <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>【アプリ限定】</p>
+              <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>フル動画公開中♡</p>
             </div>
             
             <div style={{ 
