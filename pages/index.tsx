@@ -1,78 +1,104 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+"use client";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isCounting, setIsCounting] = useState(false);
+  const [seconds, setSeconds] = useState(5); // カウントダウンは5秒
+  const [isMuted, setIsMuted] = useState(true);
+  const [isReady, setIsReady] = useState(false);
+
+  const REDIRECT_URL = "https://b-short.link/sw0612";
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
+  };
+
+  // 動画が再生開始されたら3秒タイマーをスタート
+  const handlePlay = () => {
+    setTimeout(() => {
+      setIsCounting(true);
+    }, 3000); // ここで「3秒後」を指定
+  };
+
+  // カウントダウンと自動遷移（ここは変更なし）
+  useEffect(() => {
+    if (!isCounting) return;
+    if (seconds > 0) {
+      const timer = setTimeout(() => setSeconds(seconds - 1), 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setIsReady(true);
+      videoRef.current?.pause();
+      window.location.href = REDIRECT_URL;
+    }
+  }, [isCounting, seconds]);
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black`}
-    >
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the index.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div style={{ backgroundColor: '#000', height: '100dvh', width: '100vw', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', position: 'relative', overflow: 'hidden', fontFamily: 'sans-serif' }}>
+      
+      <video
+        ref={videoRef}
+        src="/mgoHauy41.mp4"
+        autoPlay
+        muted
+        playsInline
+        loop
+        onPlay={handlePlay} // 再生開始イベントをトリガーにする
+        style={{ 
+          position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
+          objectFit: 'cover', zIndex: 1, opacity: isReady ? 0.6 : 1, transition: 'opacity 0.5s'
+        }}
+      />
+
+      <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', marginBottom: '15%', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        
+        {isCounting && (
+          <a 
+            href={REDIRECT_URL}
+            style={{ 
+              backgroundColor: '#ff69b4', color: 'white', padding: '12px 20px', borderRadius: '16px', 
+              width: 'fit-content', display: 'flex', flexDirection: 'column', alignItems: 'center',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.6)', border: '2px solid white', 
+              marginBottom: '30px', textDecoration: 'none', animation: 'fadeInUp 0.6s ease-out forwards'
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
+            <div style={{ marginBottom: '10px', textAlign: 'center' }}>
+              <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>【アプリ限定】</p>
+              <p style={{ margin: 0, fontSize: '0.8rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>フル動画公開中♡</p>
+            </div>
+            
+            <div style={{ 
+              backgroundColor: isReady ? '#fff' : 'rgba(255,255,255,0.2)', 
+              color: isReady ? '#ff69b4' : '#fff',
+              padding: '6px 16px', borderRadius: '30px', fontWeight: 'bold', fontSize: '0.9rem',
+              animation: isReady ? 'pulse 1.2s infinite' : 'none', transition: 'all 0.3s'
+            }}>
+              {isReady ? '続きを見る' : `今すぐ見る (${seconds}s)`}
+            </div>
           </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs/pages/getting-started?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        )}
+
+        {!isReady && (
+          <button 
+            onClick={toggleMute}
+            style={{ backgroundColor: 'rgba(0,0,0,0.6)', color: 'white', border: '1px solid rgba(255,255,255,0.4)', padding: '8px 20px', borderRadius: '30px', fontSize: '0.8rem', cursor: 'pointer' }}
           >
-            Documentation
-          </a>
-        </div>
-      </main>
+            音声 {isMuted ? 'ON' : 'OFF'}
+          </button>
+        )}
+      </div>
+
+      <style>{`
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(255,255,255,0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0); } }
+      `}</style>
+
+      <div style={{ position: 'absolute', bottom: 0, width: '100%', height: '40%', background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)', zIndex: 5, pointerEvents: 'none' }} />
     </div>
   );
 }
